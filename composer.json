@@ -1,0 +1,23 @@
+{
+    "name": "ronasit/laravel-clerk",
+    "description": "Package provides auth guard to auth user via the Clerk",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "RonasIT\\Clerk\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^11",
+        "lcobucci/jwt": "^5.3"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RonasIT\\Clerk\\ClerkServiceProvider"
+            ]
+        }
+    }
+}
