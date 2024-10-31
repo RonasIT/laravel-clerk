@@ -7,13 +7,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class User implements Authenticatable
 {
     public function __construct(
-        public readonly string $sub
+        public readonly string $externalId
     ) {
     }
 
     public function getAuthIdentifierName(): string
     {
-        return 'sub';
+        return 'external_id';
     }
 
     public function getAuthIdentifier(): string

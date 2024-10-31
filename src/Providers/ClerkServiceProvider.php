@@ -15,6 +15,6 @@ class ClerkServiceProvider extends ServiceProvider
             callback: fn ($app) => app(ClerkGuard::class)->setRequest($app->make('request'))
         );
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/clerk.php', 'clerk');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/clerk.php', 'clerk');
     }
 }

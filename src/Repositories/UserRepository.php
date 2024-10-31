@@ -7,10 +7,12 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Lcobucci\JWT\Token;
 use RonasIT\Clerk\Contracts\UserRepositoryContract;
 
-class ClerkUserRepository implements UserRepositoryContract
+class UserRepository implements UserRepositoryContract
 {
     public function fromToken(Token $token): Authenticatable
     {
-        return new User($token->claims()->get('sub'));
+        $externalId = $token->claims()->get('sub');
+
+        return new User($externalId);
     }
 }

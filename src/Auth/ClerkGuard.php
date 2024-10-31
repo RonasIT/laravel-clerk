@@ -2,6 +2,7 @@
 
 namespace App\Guards;
 
+use Illuminate\Support\Arr;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -28,9 +29,7 @@ class ClerkGuard implements Guard
     {
         $this->config = config('clerk');
 
-        if (array_filter($this->config) !== $this->config) {
-            throw new EmptyConfigException('One of required clerk config is empty.');
-        }
+        $this->validateConfigs();
     }
 
     public function setRequest(Request $request): self
@@ -132,8 +131,12 @@ class ClerkGuard implements Guard
             throw new TokenValidationException('Token was issued by not allowed issuer.');
         }
 
-        if (!in_array($decoded->claims()->get('azp'), config('clerk.allowed_origins'))) {
-            throw new TokenValidationException('Token was received from not allowed origin.');
+        $origin = $decoded->claims()->get('azp');
+
+        if (!empty($origin)) {
+            if (!in_array($origin, config('clerk.allowed_origins'))) {
+                throw new TokenValidationException('Token was received from not allowed origin.');
+            }
         }
 
         $signerKey = InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
@@ -145,6 +148,19 @@ class ClerkGuard implements Guard
 
         if (!$isValid) {
             throw new TokenValidationException('Token signature verification failed.');
+        }
+    }
+
+    protected function validateConfigs(): void
+    {
+        $requiredConfigs = Arr::only($this->config, [
+            'allowed_issuer',
+            'secret_key',
+            'signer_key_path',
+        ]);
+
+        if (array_filter($requiredConfigs) !== $requiredConfigs) {
+            throw new EmptyConfigException('One of required clerk config is empty.');
         }
     }
 }

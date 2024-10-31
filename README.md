@@ -2,17 +2,25 @@
 
 ## Introduction
 
-Package provides auth guard to easy configure authentication using [Clerk](https://clerk.com).
+This package offers an authentication guard to seamlessly integrate [Clerk](https://clerk.com) authentication into your
+Laravel project.
 
 ## Installation
 
-1. Install the package using the following command: `composer require ronasit/laravel-clerk`
-1. Run `php artisan vendor:publish --provider=RonasIT\\Clerk\\ClerkServiceProvider`
-1. Add new `clerk` guard to the `guards` list of your `config/auth.php`
+1. Use Composer to install the package:
+
+```sh
+composer require ronasit/laravel-clerk
+```
+
+2. Publish the package configuration:
+```sh
+php artisan vendor:publish --provider=RonasIT\\Clerk\\ClerkServiceProvider`
+```
+
+3. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:
 
 ```php
-//auth.php
-
 return [
     'defaults' => [
         'guard' => 'clerk',
@@ -24,8 +32,28 @@ return [
             'driver' => 'clerk_session',
             'provider' => 'users',
         ],
-        ...
+        // Other guards...
     ],
 ```
 
-4. Fill required configs in `config/clerk.php`
+4. Populate the necessary configuration options in `config/clerk.php`.
+
+## Usage
+
+By default, your app returns the User class with just the external_id property, which holds the user's ID in Clerk.
+
+To customize this behavior, you'll need to create your own UserRepository that implements the UserRepositoryContract.
+Then, rebind it in one of the service providers:
+
+```php
+use RonasIT\Clerk\Contracts\ClerkUserRepositoryContract;
+use App\Support\Clerk\MyAwesomeUserRepository;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->bind(ClerkUserRepositoryContract::class, MyAwesomeUserRepository::class);
+    }
+}
+```
