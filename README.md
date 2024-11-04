@@ -15,7 +15,7 @@ composer require ronasit/laravel-clerk
 
 2. Publish the package configuration:
 ```sh
-php artisan vendor:publish --provider=RonasIT\\Clerk\\ClerkServiceProvider`
+php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider
 ```
 
 3. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:

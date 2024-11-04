@@ -16,5 +16,9 @@ class ClerkServiceProvider extends ServiceProvider
         );
 
         $this->mergeConfigFrom(__DIR__ . '/../../config/clerk.php', 'clerk');
+
+        $this->publishes([
+            __DIR__ . '/../../config/clerk.php' => config_path('clerk.php'),
+        ], 'config');
     }
 }
