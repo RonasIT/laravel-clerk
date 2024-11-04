@@ -13,7 +13,7 @@ class User implements Authenticatable
 
     public function getAuthIdentifierName(): string
     {
-        return 'external_id';
+        return 'externalId';
     }
 
     public function getAuthIdentifier(): string

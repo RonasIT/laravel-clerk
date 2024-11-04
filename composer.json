@@ -16,7 +16,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "RonasIT\\Clerk\\ClerkServiceProvider"
+                "RonasIT\\Clerk\\Providers\\ClerkServiceProvider"
             ]
         }
     }

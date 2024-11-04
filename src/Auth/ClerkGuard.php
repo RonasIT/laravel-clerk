@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Guards;
+namespace RonasIT\Clerk\Auth;
 
 use Illuminate\Support\Arr;
 use Lcobucci\JWT\Encoding\JoseEncoder;
@@ -127,16 +127,14 @@ class ClerkGuard implements Guard
             throw new TokenValidationException('Token is expired or not yet valid');
         }
 
-        if ($decoded->hasBeenIssuedBy(config('clerk.allowed_issuers'))) {
+        if (!$decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))) {
             throw new TokenValidationException('Token was issued by not allowed issuer.');
         }
 
         $origin = $decoded->claims()->get('azp');
 
-        if (!empty($origin)) {
-            if (!in_array($origin, config('clerk.allowed_origins'))) {
-                throw new TokenValidationException('Token was received from not allowed origin.');
-            }
+        if (!empty($origin) && !in_array($origin, config('clerk.allowed_origins'))) {
+            throw new TokenValidationException('Token was received from not allowed origin.');
         }
 
         $signerKey = InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
