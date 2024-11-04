@@ -5,6 +5,8 @@ namespace RonasIT\Clerk\Providers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use RonasIT\Clerk\Auth\ClerkGuard;
+use RonasIT\Clerk\Contracts\UserRepositoryContract;
+use RonasIT\Clerk\Repositories\UserRepository;
 
 class ClerkServiceProvider extends ServiceProvider
 {
@@ -14,6 +16,8 @@ class ClerkServiceProvider extends ServiceProvider
             driver: 'clerk_session',
             callback: fn ($app) => app(ClerkGuard::class)->setRequest($app->make('request'))
         );
+
+        $this->app->bind(UserRepositoryContract::class, UserRepository::class);
 
         $this->mergeConfigFrom(__DIR__ . '/../../config/clerk.php', 'clerk');
 
