@@ -2,9 +2,9 @@
 
 namespace RonasIT\Clerk\Providers;
 
-use App\Guards\ClerkGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use RonasIT\Clerk\Auth\ClerkGuard;
 
 class ClerkServiceProvider extends ServiceProvider
 {

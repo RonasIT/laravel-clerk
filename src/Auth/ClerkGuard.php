@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Guards;
+namespace RonasIT\Clerk\Auth;
 
 use Illuminate\Support\Arr;
 use Lcobucci\JWT\Encoding\JoseEncoder;

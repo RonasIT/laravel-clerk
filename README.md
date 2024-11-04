@@ -14,6 +14,7 @@ composer require ronasit/laravel-clerk
 ```
 
 2. Publish the package configuration:
+
 ```sh
 php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider
 ```
