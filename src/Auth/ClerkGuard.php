@@ -127,7 +127,7 @@ class ClerkGuard implements Guard
             throw new TokenValidationException('Token is expired or not yet valid');
         }
 
-        if ($decoded->hasBeenIssuedBy(config('clerk.allowed_issuers'))) {
+        if ($decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))) {
             throw new TokenValidationException('Token was issued by not allowed issuer.');
         }
 
