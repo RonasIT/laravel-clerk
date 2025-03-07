@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
 use RonasIT\Clerk\Exceptions\TokenValidationException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 
 class ClerkGuard implements Guard
 {
@@ -67,7 +68,11 @@ class ClerkGuard implements Guard
     {
         try {
             $decoded = $this->decodeToken($token);
-        } catch (TokenValidationException|InvalidTokenStructure $e) {
+        } catch (CannotDecodeContent $e) {
+            return null;
+        }
+
+        if (!$this->isValidToken($decoded)) {
             return null;
         }
 
@@ -82,11 +87,7 @@ class ClerkGuard implements Guard
     {
         $parser = new Parser(new JoseEncoder());
 
-        $decoded = $parser->parse($sessionToken);
-
-        $this->validateToken($decoded);
-
-        return $decoded;
+        return $parser->parse($sessionToken);
     }
 
     public function getToken(): ?string
@@ -120,34 +121,22 @@ class ClerkGuard implements Guard
         return !empty($this->user);
     }
 
-    protected function validateToken(Token $decoded): void
+    protected function isValidToken(Token $decoded): bool
     {
         $now = Carbon::now();
 
-        if ($decoded->isExpired($now) || !$decoded->hasBeenIssuedBefore($now)) {
-            throw new TokenValidationException('Token is expired or not yet valid');
-        }
-
-        if (!$decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))) {
-            throw new TokenValidationException('Token was issued by not allowed issuer.');
-        }
-
-        $origin = $decoded->claims()->get('azp');
-
-        if (!empty($origin) && !in_array($origin, config('clerk.allowed_origins'))) {
-            throw new TokenValidationException('Token was received from not allowed origin.');
-        }
-
-        $signerKey = InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
-
-        $isValid = (new Validator())->validate(
-            $decoded,
-            new SignedWith(new Sha256(), $signerKey),
-        );
-
-        if (!$isValid) {
-            throw new TokenValidationException('Token signature verification failed.');
-        }
+        return !$decoded->isExpired($now)
+            && $decoded->hasBeenIssuedBefore($now)
+            && $decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))
+            && !empty($origin)
+            && !in_array($decoded->claims()->get('azp', ''), config('clerk.allowed_origins'))
+            && (new Validator())->validate(
+                $decoded,
+                new SignedWith(
+                    new Sha256(),
+                    InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'))
+                )
+            );
     }
 
     protected function validateConfigs(): void
