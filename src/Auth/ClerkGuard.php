@@ -63,12 +63,12 @@ class ClerkGuard implements Guard
             : $this->user = $this->retrieveByToken($token);
     }
 
-    public function retrieveByToken(string $token): Authenticatable
+    public function retrieveByToken(string $token): ?Authenticatable
     {
         try {
             $decoded = $this->decodeToken($token);
         } catch (TokenValidationException|InvalidTokenStructure $e) {
-            throw new UnauthorizedHttpException('clerk', $e->getMessage());
+            return null;
         }
 
         $user = app(UserRepositoryContract::class)->fromToken($decoded);
