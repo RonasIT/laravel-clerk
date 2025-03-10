@@ -102,13 +102,9 @@ class ClerkGuard implements Guard
 
     public function validate(array $credentials = []): bool
     {
-        try {
-            $this->retrieveByToken(head($credentials));
-        } catch (TokenValidationException $e) {
-            return false;
-        }
+        $user = $this->retrieveByToken(head($credentials));
 
-        return true;
+        return !is_null($user);
     }
 
     public function setUser(Authenticatable $user): void
@@ -128,15 +124,18 @@ class ClerkGuard implements Guard
         return !$decoded->isExpired($now)
             && $decoded->hasBeenIssuedBefore($now)
             && $decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))
-            && !empty($origin)
             && !in_array($decoded->claims()->get('azp', ''), config('clerk.allowed_origins'))
-            && (new Validator())->validate(
-                $decoded,
-                new SignedWith(
-                    new Sha256(),
-                    InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'))
-                )
-            );
+            && $this->hasValidSignature($decoded);
+    }
+
+    protected function hasValidSignature(Token $decoded): bool
+    {
+        $signerKey = InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
+
+        return (new Validator())->validate(
+            $decoded,
+            new SignedWith(new Sha256(), $signerKey)
+        );
     }
 
     protected function validateConfigs(): void
