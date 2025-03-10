@@ -131,7 +131,7 @@ class ClerkGuard implements Guard
 
         return (new Validator())->validate(
             $decoded,
-            new SignedWith(new Sha256(), $signerKey)
+            new SignedWith(new Sha256(), $signerKey),
         );
     }
 
