@@ -7,7 +7,6 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Token\InvalidTokenStructure;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Validator;
@@ -17,8 +16,6 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
-use RonasIT\Clerk\Exceptions\TokenValidationException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Lcobucci\JWT\Encoding\CannotDecodeContent;
 
 class ClerkGuard implements Guard
@@ -68,7 +65,7 @@ class ClerkGuard implements Guard
     {
         try {
             $decoded = $this->decodeToken($token);
-        } catch (CannotDecodeContent $e) {
+        } catch (CannotDecodeContent) {
             return null;
         }
 
