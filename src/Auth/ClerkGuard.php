@@ -7,6 +7,7 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\InvalidTokenStructure;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Validator;
@@ -65,7 +66,7 @@ class ClerkGuard implements Guard
     {
         try {
             $decoded = $this->decodeToken($token);
-        } catch (CannotDecodeContent) {
+        } catch (CannotDecodeContent|InvalidTokenStructure) {
             return null;
         }
 
