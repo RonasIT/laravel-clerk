@@ -119,10 +119,12 @@ class ClerkGuard implements Guard
     {
         $now = Carbon::now();
 
+        $origin = $decoded->claims()->get('azp');
+
         return !$decoded->isExpired($now)
             && $decoded->hasBeenIssuedBefore($now)
             && $decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))
-            && !in_array($decoded->claims()->get('azp', ''), config('clerk.allowed_origins'))
+            && (empty($origin) || in_array($origin, config('clerk.allowed_origins')))
             && $this->hasValidSignature($decoded);
     }
 
