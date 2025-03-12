@@ -17,8 +17,7 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
-use RonasIT\Clerk\Exceptions\TokenValidationException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 
 class ClerkGuard implements Guard
 {
@@ -63,12 +62,16 @@ class ClerkGuard implements Guard
             : $this->user = $this->retrieveByToken($token);
     }
 
-    public function retrieveByToken(string $token): Authenticatable
+    public function retrieveByToken(string $token): ?Authenticatable
     {
         try {
             $decoded = $this->decodeToken($token);
-        } catch (TokenValidationException|InvalidTokenStructure $e) {
-            throw new UnauthorizedHttpException('clerk', $e->getMessage());
+        } catch (CannotDecodeContent|InvalidTokenStructure) {
+            return null;
+        }
+
+        if (!$this->isValidToken($decoded)) {
+            return null;
         }
 
         $user = app(UserRepositoryContract::class)->fromToken($decoded);
@@ -82,11 +85,7 @@ class ClerkGuard implements Guard
     {
         $parser = new Parser(new JoseEncoder());
 
-        $decoded = $parser->parse($sessionToken);
-
-        $this->validateToken($decoded);
-
-        return $decoded;
+        return $parser->parse($sessionToken);
     }
 
     public function getToken(): ?string
@@ -101,13 +100,9 @@ class ClerkGuard implements Guard
 
     public function validate(array $credentials = []): bool
     {
-        try {
-            $this->retrieveByToken(head($credentials));
-        } catch (TokenValidationException $e) {
-            return false;
-        }
+        $user = $this->retrieveByToken(head($credentials));
 
-        return true;
+        return !is_null($user);
     }
 
     public function setUser(Authenticatable $user): void
@@ -120,34 +115,27 @@ class ClerkGuard implements Guard
         return !empty($this->user);
     }
 
-    protected function validateToken(Token $decoded): void
+    protected function isValidToken(Token $decoded): bool
     {
         $now = Carbon::now();
 
-        if ($decoded->isExpired($now) || !$decoded->hasBeenIssuedBefore($now)) {
-            throw new TokenValidationException('Token is expired or not yet valid');
-        }
-
-        if (!$decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))) {
-            throw new TokenValidationException('Token was issued by not allowed issuer.');
-        }
-
         $origin = $decoded->claims()->get('azp');
 
-        if (!empty($origin) && !in_array($origin, config('clerk.allowed_origins'))) {
-            throw new TokenValidationException('Token was received from not allowed origin.');
-        }
+        return !$decoded->isExpired($now)
+            && $decoded->hasBeenIssuedBefore($now)
+            && $decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))
+            && (empty($origin) || in_array($origin, config('clerk.allowed_origins')))
+            && $this->hasValidSignature($decoded);
+    }
 
+    protected function hasValidSignature(Token $decoded): bool
+    {
         $signerKey = InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
 
-        $isValid = (new Validator())->validate(
+        return (new Validator())->validate(
             $decoded,
             new SignedWith(new Sha256(), $signerKey),
         );
-
-        if (!$isValid) {
-            throw new TokenValidationException('Token signature verification failed.');
-        }
     }
 
     protected function validateConfigs(): void
