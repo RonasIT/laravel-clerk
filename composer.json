@@ -10,7 +10,7 @@
     },
     "require": {
         "php": "^8.3",
-        "laravel/framework": "^11|^12",
+        "laravel/framework": ">=11.34",
         "lcobucci/jwt": "^5.3"
     },
     "extra": {
