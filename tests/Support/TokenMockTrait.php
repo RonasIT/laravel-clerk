@@ -3,41 +3,59 @@
 namespace RonasIT\Clerk\Tests\Support;
 
 use Carbon\CarbonImmutable;
-use DateTimeImmutable;
-use Lcobucci\JWT\Encoding\ChainedFormatter;
-use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Token\Builder;
 
 trait TokenMockTrait
 {
-    protected function createJWTToken(?string $relatedTo = null, array $claims = []): Token
+    protected const SECRET_KEY_PATH = '/tests/private_key.pem';
+    protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
+    protected const SECRET_KEY_PASS = 'secret_key_pass';
+
+    protected function createJWTToken(string $relatedTo): Token
     {
-        $signingKey = InMemory::plainText(random_bytes(32));
+        $this->generateSertificates();
 
-        $currentDateTime = CarbonImmutable::now()->format('Y-m-d H:i:s');
+        $configJwt = Configuration::forAsymmetricSigner(
+            new Sha256(),
+            InMemory::file(base_path(self::SECRET_KEY_PATH), self::SECRET_KEY_PASS),
+            InMemory::file(base_path(self::SIGNER_KEY_PATH))
+        );
 
-        $now = new DateTimeImmutable($currentDateTime);
+        $now = CarbonImmutable::now()->toDateTimeImmutable();
 
-        $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()))
+        $tokenBuilder = $configJwt->builder()
+            ->issuedBy('some_issuer')
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now->modify('+1 minute'))
-            ->expiresAt($now->modify('+1 hour'));
+            ->expiresAt($now->modify('+1 hour'))
+            ->relatedTo($relatedTo);
 
-        foreach ($claims as $key => $value) {
-            $tokenBuilder = $tokenBuilder->withClaim($key, $value);
-        }
+        return $tokenBuilder->getToken(
+            $configJwt->signer(),
+            $configJwt->signingKey()
+        );
+    }
 
-        if (!empty($relatedTo)) {
-            $tokenBuilder = $tokenBuilder->relatedTo($relatedTo);
-        }
+    protected function generateSertificates(): string
+    {
+        $privateKeyResource = openssl_pkey_new([
+            'digest_alg' => 'sha256',
+            'private_key_bits' => 2048,
+            'private_key_type' => OPENSSL_KEYTYPE_RSA,
+        ]);
 
-        return $tokenBuilder
-            ->getToken(
-                signer: new Sha256(),
-                key: $signingKey,
-            );
+        openssl_pkey_export($privateKeyResource, $privateKey, self::SECRET_KEY_PASS, [
+            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC
+        ]);
+
+        $publicKey = openssl_pkey_get_details($privateKeyResource);
+
+        file_put_contents(base_path(self::SIGNER_KEY_PATH), $publicKey['key']);
+        file_put_contents(base_path(self::SECRET_KEY_PATH), $privateKey);
+
+        return self::SIGNER_KEY_PATH;
     }
 }
