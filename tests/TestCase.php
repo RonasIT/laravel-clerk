@@ -1,21 +1,16 @@
 <?php
 
-namespace RonasIT\ProjectInitializator\Tests;
+namespace RonasIT\Clerk\Tests;
 
 use Carbon\Carbon;
-use RonasIT\ProjectInitializator\ProjectInitializatorServiceProvider;
-use RonasIT\Support\Traits\FixturesTrait;
-use Orchestra\Testbench\TestCase as BaseTestCase;
+use RonasIT\Clerk\Providers\ClerkServiceProvider;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
-    use FixturesTrait;
-
     public function setUp(): void
     {
         parent::setUp();
-
-        Carbon::setTestNow('2018-11-11 11:11:11');
     }
 
     protected function defineEnvironment($app): void
@@ -26,7 +21,7 @@ class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            ProjectInitializatorServiceProvider::class,
+            ClerkServiceProvider::class,
         ];
     }
 }
