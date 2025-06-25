@@ -14,9 +14,11 @@ class ClerkGuardTest extends TestCase
 
     public function testAuthUser(): void
     {
-        Config::set('clerk.allowed_issuer', 'some_issuer');
-        Config::set('clerk.secret_key', self::SECRET_KEY_PASS);
-        Config::set('clerk.signer_key_path', self::SIGNER_KEY_PATH);
+        Config::set('clerk', [
+            'allowed_issuer' => 'some_issuer',
+            'secret_key' => self::SECRET_KEY_PASS,
+            'signer_key_path' => self::SIGNER_KEY_PATH,
+        ]);
 
         $clerkToken = $this
             ->createJWTToken('some_user_id')
@@ -36,9 +38,11 @@ class ClerkGuardTest extends TestCase
 
     public function testAuthUserInvalidToken(): void
     {
-        Config::set('clerk.allowed_issuer', 'some_issuer');
-        Config::set('clerk.secret_key', 'some_secret_key');
-        Config::set('clerk.signer_key_path', 'some_signer_key_path');
+        Config::set('clerk', [
+            'allowed_issuer' => 'some_issuer',
+            'secret_key' => 'some_secret_key',
+            'signer_key_path' => 'some_signer_key_path',
+        ]);
 
         $guard = app(ClerkGuard::class);
 
@@ -52,9 +56,11 @@ class ClerkGuardTest extends TestCase
 
     public function testAuthUserIssuerIsWrong(): void
     {
-        Config::set('clerk.allowed_issuer', 'some_wrong_issuer');
-        Config::set('clerk.secret_key', self::SECRET_KEY_PASS);
-        Config::set('clerk.signer_key_path', self::SIGNER_KEY_PATH);
+        Config::set('clerk', [
+            'allowed_issuer' => 'some_wrong_issuer',
+            'secret_key' => self::SECRET_KEY_PASS,
+            'signer_key_path' => self::SIGNER_KEY_PATH,
+        ]);
 
         $clerkToken = $this
             ->createJWTToken('some_user_id')
@@ -72,9 +78,11 @@ class ClerkGuardTest extends TestCase
 
     public function testGuest(): void
     {
-        Config::set('clerk.allowed_issuer', 'some_issuer');
-        Config::set('clerk.secret_key', 'some_secret_key');
-        Config::set('clerk.signer_key_path', 'some_signer_key_path');
+        Config::set('clerk', [
+            'allowed_issuer' => 'some_issuer',
+            'secret_key' => 'some_secret_key',
+            'signer_key_path' => 'some_signer_key_path',
+        ]);
 
         $guard = app(ClerkGuard::class);
 
