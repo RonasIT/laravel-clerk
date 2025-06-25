@@ -19,5 +19,8 @@
                 "RonasIT\\Clerk\\Providers\\ClerkServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.2"
     }
 }
