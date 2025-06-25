@@ -21,7 +21,7 @@ trait TokenMockTrait
         $configJwt = Configuration::forAsymmetricSigner(
             new Sha256(),
             InMemory::file(base_path(self::SECRET_KEY_PATH), self::SECRET_KEY_PASS),
-            InMemory::file(base_path(self::SIGNER_KEY_PATH))
+            InMemory::file(base_path(self::SIGNER_KEY_PATH)),
         );
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
@@ -48,7 +48,7 @@ trait TokenMockTrait
         ]);
 
         openssl_pkey_export($privateKeyResource, $privateKey, self::SECRET_KEY_PASS, [
-            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC
+            'encrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC,
         ]);
 
         $publicKey = openssl_pkey_get_details($privateKeyResource);
