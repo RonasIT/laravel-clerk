@@ -5,7 +5,9 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "RonasIT\\Clerk\\": "src/"
+            "RonasIT\\Clerk\\": "src/",
+            "RonasIT\\Clerk\\Tests\\": "tests/",
+            "RonasIT\\Clerk\\Tests\\Support\\": "tests/Support/"
         }
     },
     "require": {
