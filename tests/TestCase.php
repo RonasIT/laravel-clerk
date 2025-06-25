@@ -2,7 +2,6 @@
 
 namespace RonasIT\Clerk\Tests;
 
-use Carbon\Carbon;
 use RonasIT\Clerk\Providers\ClerkServiceProvider;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -18,7 +17,7 @@ class TestCase extends BaseTestCase
         $app->setBasePath(__DIR__ . '/..');
     }
 
-    protected function getPackageProviders($app): array
+    protected function getPackageProviders(): array
     {
         return [
             ClerkServiceProvider::class,
