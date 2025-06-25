@@ -10,11 +10,13 @@ class UserRepositoryTest extends TestCase
 {
     use TokenMockTrait;
 
+    protected UserRepository $userRepository;
+
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->authRepository = app(UserRepository::class);
+        $this->userRepository = app(UserRepository::class);
     }
 
     public function testClerkAuthRepositoryCreateUser()
@@ -23,7 +25,7 @@ class UserRepositoryTest extends TestCase
             relatedTo: 'user_000000000000000000000000001',
         );
 
-        $user = $this->authRepository->fromToken($clerkToken);
+        $user = $this->userRepository->fromToken($clerkToken);
 
         $this->assertEquals(User::class, get_class($user));
 
