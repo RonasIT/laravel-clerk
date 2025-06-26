@@ -31,9 +31,9 @@ class ClerkGuardTest extends TestCase
 
         $guard->setRequest($request);
 
-        $this->assertEquals(true, $guard->check());
+        $this->assertTrue($guard->check());
+        $this->assertTrue($guard->validate([$clerkToken]));
         $this->assertEquals('some_user_id', $guard->id());
-        $this->assertEquals(true, $guard->validate([$clerkToken]));
     }
 
     public function testAuthUserInvalidToken(): void
@@ -51,7 +51,7 @@ class ClerkGuardTest extends TestCase
 
         $guard->setRequest($request);
 
-        $this->assertEquals(false, $guard->check());
+        $this->assertFalse($guard->check());
     }
 
     public function testAuthUserIssuerIsWrong(): void
@@ -73,7 +73,7 @@ class ClerkGuardTest extends TestCase
 
         $guard->setRequest($request);
 
-        $this->assertEquals(false, $guard->check());
+        $this->assertFalse($guard->check());
     }
 
     public function testGuest(): void
@@ -88,7 +88,7 @@ class ClerkGuardTest extends TestCase
 
         $guard->setRequest(new Request());
 
-        $this->assertEquals(true, $guard->guest());
+        $this->assertTrue($guard->guest());
     }
 
     public function testEmptyConfigException(): void

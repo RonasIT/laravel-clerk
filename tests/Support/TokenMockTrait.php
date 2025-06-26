@@ -16,12 +16,12 @@ trait TokenMockTrait
 
     protected function createJWTToken(string $relatedTo): Token
     {
-        $this->generateSertificates();
+        $this->generateCertificates();
 
         $configJwt = Configuration::forAsymmetricSigner(
-            new Sha256(),
-            InMemory::file(base_path(self::SECRET_KEY_PATH), self::SECRET_KEY_PASS),
-            InMemory::file(base_path(self::SIGNER_KEY_PATH)),
+            signer: new Sha256(),
+            signingKey: InMemory::file(base_path(self::SECRET_KEY_PATH), self::SECRET_KEY_PASS),
+            verificationKey: InMemory::file(base_path(self::SIGNER_KEY_PATH)),
         );
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
@@ -33,13 +33,10 @@ trait TokenMockTrait
             ->expiresAt($now->modify('+1 hour'))
             ->relatedTo($relatedTo);
 
-        return $tokenBuilder->getToken(
-            $configJwt->signer(),
-            $configJwt->signingKey()
-        );
+        return $tokenBuilder->getToken($configJwt->signer(), $configJwt->signingKey());
     }
 
-    protected function generateSertificates(): string
+    protected function generateCertificates(): void
     {
         $privateKeyResource = openssl_pkey_new([
             'digest_alg' => 'sha256',
@@ -55,7 +52,5 @@ trait TokenMockTrait
 
         file_put_contents(base_path(self::SIGNER_KEY_PATH), $publicKey['key']);
         file_put_contents(base_path(self::SECRET_KEY_PATH), $privateKey);
-
-        return self::SIGNER_KEY_PATH;
     }
 }
