@@ -24,12 +24,10 @@ class ClerkGuardTest extends TestCase
             ->createJWTToken('some_user_id')
             ->toString();
 
-        $guard = app(ClerkGuard::class);
-
         $request = new Request();
         $request->headers->set('Authorization', "Bearer {$clerkToken}");
 
-        $guard->setRequest($request);
+        $guard = app(ClerkGuard::class)->setRequest($request);
 
         $this->assertTrue($guard->check());
         $this->assertTrue($guard->validate([$clerkToken]));
@@ -39,17 +37,14 @@ class ClerkGuardTest extends TestCase
     public function testAuthUserInvalidToken(): void
     {
         Config::set('clerk', [
-            'allowed_issuer' => 'some_issuer',
             'secret_key' => 'some_secret_key',
             'signer_key_path' => 'some_signer_key_path',
         ]);
 
-        $guard = app(ClerkGuard::class);
-
         $request = new Request();
         $request->headers->set('Authorization', "Bearer NOT_JWT_TOKEN");
 
-        $guard->setRequest($request);
+        $guard = app(ClerkGuard::class)->setRequest($request);
 
         $this->assertFalse($guard->check());
     }
@@ -66,12 +61,10 @@ class ClerkGuardTest extends TestCase
             ->createJWTToken('some_user_id')
             ->toString();
 
-        $guard = app(ClerkGuard::class);
-
         $request = new Request();
         $request->headers->set('Authorization', "Bearer {$clerkToken}");
 
-        $guard->setRequest($request);
+        $guard = app(ClerkGuard::class)->setRequest($request);
 
         $this->assertFalse($guard->check());
     }
@@ -79,14 +72,11 @@ class ClerkGuardTest extends TestCase
     public function testGuest(): void
     {
         Config::set('clerk', [
-            'allowed_issuer' => 'some_issuer',
             'secret_key' => 'some_secret_key',
             'signer_key_path' => 'some_signer_key_path',
         ]);
 
-        $guard = app(ClerkGuard::class);
-
-        $guard->setRequest(new Request());
+        $guard = app(ClerkGuard::class)->setRequest(new Request());
 
         $this->assertTrue($guard->guest());
     }

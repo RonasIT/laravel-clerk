@@ -7,11 +7,6 @@ use RonasIT\Clerk\Providers\ClerkServiceProvider;
 
 class TestCase extends BaseTest
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     protected function getPackageProviders($app): array
     {
         return [

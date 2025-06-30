@@ -10,18 +10,19 @@ use Lcobucci\JWT\Token;
 
 trait TokenMockTrait
 {
-    protected const SECRET_KEY_PATH = '/tests/private_key.pem';
     protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
     protected const SECRET_KEY_PASS = 'secret_key_pass';
 
     protected function createJWTToken(string $relatedTo): Token
     {
-        $this->generateCertificates();
+        list($signerSert, $privateSert) = $this->generateCertificates();
+
+        file_put_contents(base_path(self::SIGNER_KEY_PATH), $signerSert);
 
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),
-            signingKey: InMemory::file(base_path(self::SECRET_KEY_PATH), self::SECRET_KEY_PASS),
-            verificationKey: InMemory::file(base_path(self::SIGNER_KEY_PATH)),
+            signingKey: InMemory::plainText($privateSert, self::SECRET_KEY_PASS),
+            verificationKey: InMemory::plainText($signerSert),
         );
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
@@ -36,7 +37,7 @@ trait TokenMockTrait
         return $tokenBuilder->getToken($configJwt->signer(), $configJwt->signingKey());
     }
 
-    protected function generateCertificates(): void
+    protected function generateCertificates(): array
     {
         $privateKeyResource = openssl_pkey_new([
             'digest_alg' => 'sha256',
@@ -50,7 +51,9 @@ trait TokenMockTrait
 
         $publicKey = openssl_pkey_get_details($privateKeyResource);
 
-        file_put_contents(base_path(self::SIGNER_KEY_PATH), $publicKey['key']);
-        file_put_contents(base_path(self::SECRET_KEY_PATH), $privateKey);
+        return [
+            $publicKey['key'],
+            $privateKey
+        ];
     }
 }
