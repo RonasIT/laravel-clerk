@@ -15,14 +15,14 @@ trait TokenMockTrait
 
     protected function createJWTToken(string $relatedTo): Token
     {
-        list($signerSert, $privateSert) = $this->generateCertificates();
+        list($signerСert, $privateСert) = $this->generateCertificates();
 
-        file_put_contents(base_path(self::SIGNER_KEY_PATH), $signerSert);
+        file_put_contents(base_path(self::SIGNER_KEY_PATH), $signerСert);
 
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),
-            signingKey: InMemory::plainText($privateSert, self::SECRET_KEY_PASS),
-            verificationKey: InMemory::plainText($signerSert),
+            signingKey: InMemory::plainText($privateСert, self::SECRET_KEY_PASS),
+            verificationKey: InMemory::plainText($signerСert),
         );
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
