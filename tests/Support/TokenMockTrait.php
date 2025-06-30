@@ -53,7 +53,7 @@ trait TokenMockTrait
 
         return [
             $publicKey['key'],
-            $privateKey
+            $privateKey,
         ];
     }
 }
