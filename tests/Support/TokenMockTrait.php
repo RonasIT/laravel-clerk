@@ -27,15 +27,14 @@ trait TokenMockTrait
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
 
-        $tokenBuilder = $configJwt
+        return $configJwt
             ->builder()
             ->issuedBy('some_issuer')
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now->modify('+1 minute'))
             ->expiresAt($now->modify('+1 hour'))
-            ->relatedTo($relatedTo);
-
-        return $tokenBuilder->getToken($configJwt->signer(), $configJwt->signingKey());
+            ->relatedTo($relatedTo)
+            ->getToken($configJwt->signer(), $configJwt->signingKey());
     }
 
     protected function generateCertificates(): array
