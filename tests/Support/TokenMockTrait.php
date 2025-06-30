@@ -27,7 +27,8 @@ trait TokenMockTrait
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
 
-        $tokenBuilder = $configJwt->builder()
+        $tokenBuilder = $configJwt
+            ->builder()
             ->issuedBy('some_issuer')
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now->modify('+1 minute'))
