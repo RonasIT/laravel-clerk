@@ -34,21 +34,6 @@ class ClerkGuardTest extends TestCase
         $this->assertEquals('some_user_id', $guard->id());
     }
 
-    public function testAuthUserInvalidToken(): void
-    {
-        Config::set('clerk', [
-            'secret_key' => 'some_secret_key',
-            'signer_key_path' => 'some_signer_key_path',
-        ]);
-
-        $request = new Request();
-        $request->headers->set('Authorization', "Bearer NOT_JWT_TOKEN");
-
-        $guard = app(ClerkGuard::class)->setRequest($request);
-
-        $this->assertFalse($guard->check());
-    }
-
     public function testAuthUserIssuerIsWrong(): void
     {
         Config::set('clerk', [
@@ -63,6 +48,21 @@ class ClerkGuardTest extends TestCase
 
         $request = new Request();
         $request->headers->set('Authorization', "Bearer {$clerkToken}");
+
+        $guard = app(ClerkGuard::class)->setRequest($request);
+
+        $this->assertFalse($guard->check());
+    }
+
+    public function testAuthUserInvalidToken(): void
+    {
+        Config::set('clerk', [
+            'secret_key' => 'some_secret_key',
+            'signer_key_path' => 'some_signer_key_path',
+        ]);
+
+        $request = new Request();
+        $request->headers->set('Authorization', "Bearer NOT_JWT_TOKEN");
 
         $guard = app(ClerkGuard::class)->setRequest($request);
 
