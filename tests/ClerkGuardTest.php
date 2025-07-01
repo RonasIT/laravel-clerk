@@ -37,13 +37,13 @@ class ClerkGuardTest extends TestCase
     public function testAuthUserIssuerIsWrong(): void
     {
         Config::set('clerk', [
-            'allowed_issuer' => 'wrong_issuer',
+            'allowed_issuer' => 'issuer',
             'secret_key' => self::SECRET_KEY_PASS,
             'signer_key_path' => self::SIGNER_KEY_PATH,
         ]);
 
         $clerkToken = $this
-            ->createJWTToken('user_id')
+            ->createJWTToken('user_id', 'wrong_issuer')
             ->toString();
 
         $request = new Request();
