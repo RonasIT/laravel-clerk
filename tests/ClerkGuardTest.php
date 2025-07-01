@@ -15,13 +15,13 @@ class ClerkGuardTest extends TestCase
     public function testAuthUser(): void
     {
         Config::set('clerk', [
-            'allowed_issuer' => 'some_issuer',
+            'allowed_issuer' => 'issuer',
             'secret_key' => self::SECRET_KEY_PASS,
             'signer_key_path' => self::SIGNER_KEY_PATH,
         ]);
 
         $clerkToken = $this
-            ->createJWTToken('some_user_id')
+            ->createJWTToken('user_id')
             ->toString();
 
         $request = new Request();
@@ -31,19 +31,19 @@ class ClerkGuardTest extends TestCase
 
         $this->assertTrue($guard->check());
         $this->assertTrue($guard->validate([$clerkToken]));
-        $this->assertEquals('some_user_id', $guard->id());
+        $this->assertEquals('user_id', $guard->id());
     }
 
     public function testAuthUserIssuerIsWrong(): void
     {
         Config::set('clerk', [
-            'allowed_issuer' => 'some_wrong_issuer',
+            'allowed_issuer' => 'wrong_issuer',
             'secret_key' => self::SECRET_KEY_PASS,
             'signer_key_path' => self::SIGNER_KEY_PATH,
         ]);
 
         $clerkToken = $this
-            ->createJWTToken('some_user_id')
+            ->createJWTToken('user_id')
             ->toString();
 
         $request = new Request();

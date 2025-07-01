@@ -13,7 +13,7 @@ trait TokenMockTrait
     protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
     protected const SECRET_KEY_PASS = 'secret_key_pass';
 
-    protected function createJWTToken(string $relatedTo): Token
+    protected function createJWTToken(string $relatedTo, string $issuer = 'issuer'): Token
     {
         list($signerСert, $privateСert) = $this->generateCertificates();
 
@@ -29,7 +29,7 @@ trait TokenMockTrait
 
         return $configJwt
             ->builder()
-            ->issuedBy('some_issuer')
+            ->issuedBy($issuer)
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now->modify('+1 minute'))
             ->expiresAt($now->modify('+1 hour'))
