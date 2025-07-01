@@ -12,14 +12,19 @@ class ClerkGuardTest extends TestCase
 {
     use TokenMockTrait;
 
-    public function testAuthUser(): void
+    public function setUp(): void
     {
+        parent::setUp();
+
         Config::set('clerk', [
             'allowed_issuer' => 'issuer',
             'secret_key' => self::SECRET_KEY_PASS,
             'signer_key_path' => self::SIGNER_KEY_PATH,
         ]);
+    }
 
+    public function testAuthUser(): void
+    {
         $clerkToken = $this
             ->createJWTToken('user_id')
             ->toString();
@@ -36,12 +41,6 @@ class ClerkGuardTest extends TestCase
 
     public function testAuthUserIssuerIsWrong(): void
     {
-        Config::set('clerk', [
-            'allowed_issuer' => 'issuer',
-            'secret_key' => self::SECRET_KEY_PASS,
-            'signer_key_path' => self::SIGNER_KEY_PATH,
-        ]);
-
         $clerkToken = $this
             ->createJWTToken('user_id', 'wrong_issuer')
             ->toString();
@@ -56,11 +55,6 @@ class ClerkGuardTest extends TestCase
 
     public function testAuthUserInvalidToken(): void
     {
-        Config::set('clerk', [
-            'secret_key' => 'some_secret_key',
-            'signer_key_path' => 'some_signer_key_path',
-        ]);
-
         $request = new Request();
         $request->headers->set('Authorization', "Bearer NOT_JWT_TOKEN");
 
@@ -71,11 +65,6 @@ class ClerkGuardTest extends TestCase
 
     public function testGuest(): void
     {
-        Config::set('clerk', [
-            'secret_key' => 'some_secret_key',
-            'signer_key_path' => 'some_signer_key_path',
-        ]);
-
         $guard = app(ClerkGuard::class)->setRequest(new Request());
 
         $this->assertTrue($guard->guest());
@@ -83,6 +72,12 @@ class ClerkGuardTest extends TestCase
 
     public function testEmptyConfigException(): void
     {
+        Config::set('clerk', [
+            'allowed_issuer' => null,
+            'secret_key' => null,
+            'signer_key_path' => null,
+        ]);
+
         $this->expectException(EmptyConfigException::class);
 
         $this->expectExceptionMessage('One of required clerk config is empty.');
