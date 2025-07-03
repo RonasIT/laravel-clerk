@@ -1,23 +1,31 @@
 {
-    "name": "ronasit/laravel-clerk",
-    "description": "Package provides auth guard to auth user via the Clerk",
-    "type": "library",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "RonasIT\\Clerk\\": "src/"
-        }
-    },
-    "require": {
-        "php": "^8.3",
-        "laravel/framework": ">=11.34",
-        "lcobucci/jwt": "^5.3"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "RonasIT\\Clerk\\Providers\\ClerkServiceProvider"
-            ]
-        }
+  "name": "ronasit/laravel-clerk",
+  "description": "Package provides auth guard to auth user via the Clerk",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "RonasIT\\Clerk\\": "src/",
+      "RonasIT\\Clerk\\Tests\\": "tests/",
+      "RonasIT\\Clerk\\Tests\\Support\\": "tests/Support/"
     }
+  },
+  "require": {
+    "php": "^8.3",
+    "laravel/framework": ">=11.34",
+    "lcobucci/jwt": "^5.3"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "RonasIT\\Clerk\\Providers\\ClerkServiceProvider"
+      ]
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.2",
+    "php-coveralls/php-coveralls": "^0.1.0",
+    "orchestra/testbench": "^10.4",
+    "ext-openssl": "*"
+  }
 }
