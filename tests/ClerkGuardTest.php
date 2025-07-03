@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use RonasIT\Clerk\Auth\ClerkGuard;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
+use RonasIT\Clerk\Tests\Support\ClerkGuardTestTrait;
 use RonasIT\Clerk\Tests\Support\TokenMockTrait;
 
 class ClerkGuardTest extends TestCase
 {
-    use TokenMockTrait;
+    use TokenMockTrait, ClerkGuardTestTrait;
 
     public function setUp(): void
     {
@@ -29,8 +30,7 @@ class ClerkGuardTest extends TestCase
             ->createJWTToken('user_id')
             ->toString();
 
-        $request = new Request();
-        $request->headers->set('Authorization', "Bearer {$clerkToken}");
+        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
 
         $guard = app(ClerkGuard::class)->setRequest($request);
 
@@ -45,8 +45,7 @@ class ClerkGuardTest extends TestCase
             ->createJWTToken('user_id', 'wrong_issuer')
             ->toString();
 
-        $request = new Request();
-        $request->headers->set('Authorization', "Bearer {$clerkToken}");
+        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
 
         $guard = app(ClerkGuard::class)->setRequest($request);
 
@@ -55,8 +54,7 @@ class ClerkGuardTest extends TestCase
 
     public function testAuthUserInvalidToken(): void
     {
-        $request = new Request();
-        $request->headers->set('Authorization', "Bearer NOT_JWT_TOKEN");
+        $request = $this->generateRequest(['Authorization' => 'Bearer NOT_JWT_TOKEN']);
 
         $guard = app(ClerkGuard::class)->setRequest($request);
 
