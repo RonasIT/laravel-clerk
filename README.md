@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/RonasIT/laravel-clerk/badge.svg?branch=main)](https://coveralls.io/github/RonasIT/laravel-clerk?branch=main)
+
 # Laravel Clerk Guard
 
 ## Introduction
