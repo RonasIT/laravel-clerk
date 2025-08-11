@@ -43,9 +43,9 @@ return [
 
 ## Usage
 
-By default, your app returns the User class with just the external_id property, which holds the user's ID in Clerk.
+By default, your app returns the `User` class with just the `external_id` property, which holds the user's ID in Clerk.
 
-To customize this behavior, you'll need to create your own UserRepository that implements the UserRepositoryContract.
+To customize this behavior, you'll need to create your own `UserRepository` that implements the `UserRepositoryContract`.
 Then, rebind it in one of the service providers:
 
 ```php
@@ -54,7 +54,7 @@ use App\Support\Clerk\MyAwesomeUserRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    public function boot(): void
     {
         $this->app->bind(ClerkUserRepositoryContract::class, MyAwesomeUserRepository::class);
     }
