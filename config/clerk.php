@@ -6,7 +6,7 @@ return [
     | Token issuer, url
     |--------------------------------------------------------------------------
     | You can find your Clerk Frontend API URL in your Clerk dashboard under:
-    | "Configure" -> "API keys" -> "Show API URLs" -> "Frontend API URL"
+    | "Configure" -> "API keys" -> "Frontend API URL"
     */
     'allowed_issuer' => env('CLERK_ALLOWED_ISSUER'),
 
@@ -34,7 +34,7 @@ return [
     |--------------------------------------------------------------------------
     | Path to your public JWT key file. You can find the file content in your
     | Clerk dashboard under:
-    | "Configure" -> "API keys" -> "Show JWT public key" -> "PEM Public Key"
+    | "Configure" -> "API keys" -> "JWKS Public Key""
     */
     'signer_key_path' => env('CLERK_SIGNER_KEY_PATH', 'clerk.pem'),
 ];
