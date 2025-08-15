@@ -2,10 +2,9 @@
 
 return [
     'defaults' => [
-        'guard' => 'api',
+        'guard' => 'clerk',
         'passwords' => 'users',
     ],
-
     'guards' => [
         'api' => [
             'driver' => 'jwt',
@@ -14,6 +13,10 @@ return [
         'telescope' => [
             'driver' => 'session',
             'provider' => 'admins',
+        ],
+        'clerk' => [
+            'driver' => 'clerk_session',
+            'provider' => 'users',
         ],
     ],
 ];

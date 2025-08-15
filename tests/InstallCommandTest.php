@@ -10,14 +10,17 @@ class InstallCommandTest extends TestCase
 
     public function testRun()
     {
+        $authConfigPath = base_path('config/auth.php');
+
         $this->mockNativeFunction(
             '\Winter\LaravelConfigWriter',
             [
-                [
-                    'function' => 'file_put_contents',
-                    'arguments' => [base_path('config/auth.php'), $this->getFixture('auth.php')],
-                    'result' => $this->getFixture('auth.php'),
-                ],
+                $this->functionCall('file_exists', [$authConfigPath], true),
+                $this->functionCall('file_get_contents', [$authConfigPath], $this->getFixture('auth.php')),
+                $this->functionCall('file_put_contents', [
+                    $authConfigPath,
+                    $this->getFixture('auth_after_changes.php'),
+                ], $this->getFixture('auth_after_changes.php')),
             ]
         );   
 
