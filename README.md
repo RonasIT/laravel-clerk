@@ -23,20 +23,8 @@ php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServicePro
 
 3. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:
 
-```php
-return [
-    'defaults' => [
-        'guard' => 'clerk',
-        'passwords' => 'users',
-    ],
-
-    'guards' => [
-        'clerk' => [
-            'driver' => 'clerk_session',
-            'provider' => 'users',
-        ],
-        // Other guards...
-    ],
+```sh
+php artisan laravel-clerk:install
 ```
 
 4. Populate the necessary configuration options in `config/clerk.php`.
