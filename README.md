@@ -15,7 +15,7 @@ Laravel project.
 composer require ronasit/laravel-clerk
 ```
 
-2. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:
+2. Run package's `install` command
 
 ```sh
 php artisan laravel-clerk:install
