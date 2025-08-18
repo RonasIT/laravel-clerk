@@ -9,7 +9,7 @@ class InstallCommand extends Command
 {
     protected $signature = 'laravel-clerk:install';
 
-    protected $description = 'Installs Clerk authentication by adding a new guard to config/auth.php';
+    protected $description = 'Installs Clerk authentication driver';
 
     public function handle(): void
     {

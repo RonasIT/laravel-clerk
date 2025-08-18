@@ -12,17 +12,14 @@ class InstallCommandTest extends TestCase
     {
         $authConfigPath = base_path('config/auth.php');
 
-        $this->mockNativeFunction(
-            '\Winter\LaravelConfigWriter',
-            [
-                $this->functionCall('file_exists', [$authConfigPath], true),
-                $this->functionCall('file_get_contents', [$authConfigPath], $this->getFixture('auth.php')),
-                $this->functionCall('file_put_contents', [
-                    $authConfigPath,
-                    $this->getFixture('auth_after_changes.php'),
-                ], $this->getFixture('auth_after_changes.php')),
-            ]
-        );   
+        $this->mockNativeFunction('\Winter\LaravelConfigWriter', [
+            $this->functionCall('file_exists', [$authConfigPath], true),
+            $this->functionCall('file_get_contents', [$authConfigPath], $this->getFixture('auth.php')),
+            $this->functionCall('file_put_contents', [
+                $authConfigPath,
+                $this->getFixture('auth_after_changes.php'),
+            ], 1),
+        ]);
 
         $this->artisan('laravel-clerk:install');
     }
