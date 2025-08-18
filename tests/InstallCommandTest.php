@@ -12,7 +12,7 @@ class InstallCommandTest extends TestCase
     {
         $this->mockNativeFunction('RonasIT\Clerk\Commands', [
             $this->functionCall('shell_exec', [
-                'php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider',
+                'php artisan vendor:publish --provider="RonasIT\\Clerk\\Providers\\ClerkServiceProvider"',
             ]),
         ]);
 
