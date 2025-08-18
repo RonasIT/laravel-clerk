@@ -15,19 +15,13 @@ Laravel project.
 composer require ronasit/laravel-clerk
 ```
 
-2. Publish the package configuration:
-
-```sh
-php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider
-```
-
-3. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:
+2. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:
 
 ```sh
 php artisan laravel-clerk:install
 ```
 
-4. Populate the necessary configuration options in `config/clerk.php`.
+3. Populate the necessary configuration options in `config/clerk.php`.
 
 ## Usage
 

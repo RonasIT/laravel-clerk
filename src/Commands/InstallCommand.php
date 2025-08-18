@@ -13,6 +13,8 @@ class InstallCommand extends Command
 
     public function handle(): void
     {
+        shell_exec("php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider");
+
         $config = ArrayFile::open(base_path('config/auth.php'));
         
         $config

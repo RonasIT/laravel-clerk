@@ -10,6 +10,12 @@ class InstallCommandTest extends TestCase
 
     public function testRun()
     {
+        $this->mockNativeFunction('RonasIT\Clerk\Commands', [
+            $this->functionCall('shell_exec', [
+                'php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider',
+            ]),
+        ]);
+
         $authConfigPath = base_path('config/auth.php');
 
         $this->mockNativeFunction('\Winter\LaravelConfigWriter', [
