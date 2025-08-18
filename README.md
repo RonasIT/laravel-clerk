@@ -15,31 +15,13 @@ Laravel project.
 composer require ronasit/laravel-clerk
 ```
 
-2. Publish the package configuration:
+2. Run package's `install` command
 
 ```sh
-php artisan vendor:publish --provider=RonasIT\\Clerk\\Providers\\ClerkServiceProvider
+php artisan laravel-clerk:install
 ```
 
-3. Add a new `clerk` guard within the `guards` array in your `config/auth.php` file:
-
-```php
-return [
-    'defaults' => [
-        'guard' => 'clerk',
-        'passwords' => 'users',
-    ],
-
-    'guards' => [
-        'clerk' => [
-            'driver' => 'clerk_session',
-            'provider' => 'users',
-        ],
-        // Other guards...
-    ],
-```
-
-4. Populate the necessary configuration options in `config/clerk.php`.
+3. Populate the necessary configuration options in `config/clerk.php`.
 
 ## Usage
 

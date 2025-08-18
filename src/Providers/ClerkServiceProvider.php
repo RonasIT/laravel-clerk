@@ -5,6 +5,7 @@ namespace RonasIT\Clerk\Providers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use RonasIT\Clerk\Auth\ClerkGuard;
+use RonasIT\Clerk\Commands\InstallCommand;
 use RonasIT\Clerk\Contracts\UserRepositoryContract;
 use RonasIT\Clerk\Repositories\UserRepository;
 
@@ -24,5 +25,9 @@ class ClerkServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../config/clerk.php' => config_path('clerk.php'),
         ], 'config');
+
+        $this->commands([
+            InstallCommand::class,
+        ]);
     }
 }
