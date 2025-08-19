@@ -27,6 +27,11 @@ class InstallCommandTest extends TestCase
             ], 1),
         ]);
 
-        $this->artisan('laravel-clerk:install');
+        $this
+            ->artisan('laravel-clerk:install')
+            ->expectsOutput('Starting installation process...')
+            ->expectsOutput('Publishing package config...')
+            ->expectsOutput('Modifying config file...')
+            ->expectsOutput('Installation process has been successfully completed!');
     }
 }
