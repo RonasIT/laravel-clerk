@@ -15,7 +15,7 @@ class ClerkServiceProvider extends ServiceProvider
     {
         Auth::extend(
             driver: 'clerk_session',
-            callback: fn ($app) => app(ClerkGuard::class)->setRequest($app->make('request'))
+            callback: fn ($app) => app(ClerkGuard::class)->setRequest($app->make('request')),
         );
 
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);

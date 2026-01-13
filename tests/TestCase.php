@@ -9,7 +9,7 @@ use RonasIT\Support\Traits\FixturesTrait;
 class TestCase extends BaseTest
 {
     use FixturesTrait;
-    
+
     protected function defineEnvironment($app): void
     {
         $app->setBasePath(__DIR__ . '/..');

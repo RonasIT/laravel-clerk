@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class User implements Authenticatable
 {
     public function __construct(
-        public readonly string $externalId
+        public readonly string $externalId,
     ) {
     }
 

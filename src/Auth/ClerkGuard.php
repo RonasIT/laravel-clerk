@@ -2,7 +2,12 @@
 
 namespace RonasIT\Clerk\Auth;
 
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -12,12 +17,7 @@ use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Validator;
 use RonasIT\Clerk\Contracts\UserRepositoryContract;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
-use Lcobucci\JWT\Encoding\CannotDecodeContent;
 
 class ClerkGuard implements Guard
 {
