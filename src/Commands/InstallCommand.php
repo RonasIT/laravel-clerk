@@ -24,7 +24,7 @@ class InstallCommand extends Command
         $this->info('Modifying config file...');
 
         $config = ArrayFile::open(base_path('config/auth.php'));
-        
+
         $config
             ->set('defaults.guard', 'clerk')
             ->set('defaults.passwords', 'users')

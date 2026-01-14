@@ -11,7 +11,7 @@ use RonasIT\Clerk\Tests\Support\TokenMockTrait;
 
 class ClerkGuardTest extends TestCase
 {
-    use TokenMockTrait, ClerkGuardTestTrait;
+    use ClerkGuardTestTrait, TokenMockTrait;
 
     public function setUp(): void
     {

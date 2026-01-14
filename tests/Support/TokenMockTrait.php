@@ -4,8 +4,8 @@ namespace RonasIT\Clerk\Tests\Support;
 
 use Carbon\CarbonImmutable;
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token;
 
 trait TokenMockTrait
