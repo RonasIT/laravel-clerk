@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\Config;
 use RonasIT\Clerk\Auth\ClerkGuard;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
 use RonasIT\Clerk\Tests\Support\ClerkGuardTestTrait;
-use RonasIT\Clerk\Tests\Support\TokenMockTrait;
+use RonasIT\Clerk\Traits\TokenMockTrait;
 
 class ClerkGuardTest extends TestCase
 {
-    use ClerkGuardTestTrait, TokenMockTrait;
+    use ClerkGuardTestTrait;
+    use TokenMockTrait;
 
     public function setUp(): void
     {
@@ -37,6 +38,28 @@ class ClerkGuardTest extends TestCase
         $this->assertTrue($guard->check());
         $this->assertTrue($guard->validate([$clerkToken]));
         $this->assertEquals('user_id', $guard->id());
+    }
+
+    public function testAuthUserWithCustomClaims(): void
+    {
+        $customClaims = $this->getJsonFixture('user_custom_claims');
+
+        $clerkToken = $this
+            ->createJWTToken(
+                relatedTo: 'user_id',
+                claims: $customClaims,
+            )
+            ->toString();
+
+        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
+
+        $guard = app(ClerkGuard::class)->setRequest($request);
+
+        $parsedClaims = $guard->decodeToken($guard->getToken())->claims();
+
+        foreach ($customClaims as $name => $value) {
+            $this->assertEquals($parsedClaims->get($name), $value);
+        }
     }
 
     public function testAuthUserIssuerIsWrong(): void
