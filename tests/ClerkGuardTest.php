@@ -55,11 +55,15 @@ class ClerkGuardTest extends TestCase
 
         $guard = app(ClerkGuard::class)->setRequest($request);
 
-        $parsedClaims = $guard->decodeToken($guard->getToken())->claims();
+        $claims = $guard
+            ->decodeToken($guard->getToken())
+            ->claims()
+            ->all();
 
-        foreach ($customClaims as $name => $value) {
-            $this->assertEquals($parsedClaims->get($name), $value);
-        }
+        $this->assertEquals(
+            expected: $customClaims,
+            actual: array_intersect_key($claims, $customClaims),
+        );
     }
 
     public function testAuthUserIssuerIsWrong(): void
