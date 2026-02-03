@@ -1,6 +1,6 @@
 <?php
 
-namespace RonasIT\Clerk\Tests\Support;
+namespace RonasIT\Clerk\Traits;
 
 use Carbon\CarbonImmutable;
 use Lcobucci\JWT\Configuration;
@@ -13,7 +13,7 @@ trait TokenMockTrait
     protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
     protected const SECRET_KEY_PASS = 'secret_key_pass';
 
-    protected function createJWTToken(string $relatedTo, string $issuer = 'issuer'): Token
+    protected function createJWTToken(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
     {
         list($signerСert, $privateСert) = $this->generateCertificates();
 
@@ -27,8 +27,13 @@ trait TokenMockTrait
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
 
-        return $configJwt
-            ->builder()
+        $builder = $configJwt->builder();
+
+        foreach ($claims as $name => $value) {
+            $builder = $builder->withClaim($name, $value);
+        }
+
+        return $builder
             ->issuedBy($issuer)
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now->modify('+1 minute'))

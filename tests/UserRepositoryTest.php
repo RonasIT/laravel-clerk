@@ -4,7 +4,7 @@ namespace RonasIT\Clerk\Tests;
 
 use RonasIT\Clerk\Auth\User;
 use RonasIT\Clerk\Repositories\UserRepository;
-use RonasIT\Clerk\Tests\Support\TokenMockTrait;
+use RonasIT\Clerk\Traits\TokenMockTrait;
 
 class UserRepositoryTest extends TestCase
 {
