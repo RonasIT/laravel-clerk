@@ -42,3 +42,30 @@ class AppServiceProvider extends ServiceProvider
     }
 }
 ```
+
+## Testing
+
+To test authenticated user requests guarded by `ClerkGuard`, use the `TokenMockTrait`:
+1. set the Clerk configuration values for the test:
+
+```php
+Config::set('clerk', [
+    'allowed_issuer' => 'issuer',
+    'secret_key' => self::SECRET_KEY_PASS,
+    'signer_key_path' => self::SIGNER_KEY_PATH,
+]);
+```
+
+2. create a JWT token using the `createJWTToken` method, you may also pass custom claims to the token:
+
+```php
+$clerkToken = $this
+    ->createJWTToken(
+        relatedTo: 'user_id',
+        issuer: 'issuer',
+        claims: ['email' => 'user@mail.com'],
+    )
+    ->toString();
+```
+
+3. attach generated token to the request’s `Authorization` header as a Bearer token.
