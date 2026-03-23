@@ -10,14 +10,20 @@ use Lcobucci\JWT\Token;
 
 trait TokenMockTrait
 {
-    protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
+    protected const SIGNER_KEY_PATH = 'storage/framework/testing/public_key.pem';
     protected const SECRET_KEY_PASS = 'secret_key_pass';
 
     protected function createJWTToken(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
     {
         list($signerCert, $privateCert) = $this->generateCertificates();
 
-        file_put_contents(base_path(self::SIGNER_KEY_PATH), $signerCert);
+        $keyPath = base_path(self::SIGNER_KEY_PATH);
+
+        if (!is_dir(dirname($keyPath))) {
+            mkdir(dirname($keyPath), 0755, true);
+        }
+
+        file_put_contents($keyPath, $signerCert);
 
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),
