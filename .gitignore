@@ -3,3 +3,4 @@
 /.vscode
 /vendor/
 .DS_Store
+/storage/
