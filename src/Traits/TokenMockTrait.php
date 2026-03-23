@@ -10,8 +10,8 @@ use Lcobucci\JWT\Token;
 
 trait TokenMockTrait
 {
-    protected const SIGNER_KEY_PATH = 'storage/framework/testing/public_key.pem';
-    protected const SECRET_KEY_PASS = 'secret_key_pass';
+    protected const string SIGNER_KEY_PATH = 'storage/framework/testing/public_key.pem';
+    protected const string SECRET_KEY_PASS = 'secret_key_pass';
 
     protected function createJWTToken(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
     {
