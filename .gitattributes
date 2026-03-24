@@ -2,3 +2,5 @@ composer.lock export-ignore
 docker-compose.yml export-ignore
 README.md export-ignore
 pint.json export-ignore
+/tests export-ignore
+phpunit.xml export-ignore
