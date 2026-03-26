@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
 ## Testing
 
 To test authenticated user requests guarded by `ClerkGuard`, use the `TokenMockTrait`:
-1. set the Clerk configuration values for the test:
+1. Ensure clerk config is completely filled using `.env.testing` file or dynamically:
 
 ```php
 Config::set('clerk', [
@@ -56,16 +56,39 @@ Config::set('clerk', [
 ]);
 ```
 
-2. create a JWT token using the `createJWTToken` method, you may also pass custom claims to the token:
+2. Generate a JWT token using the `createJWTToken`:
 
 ```php
-$clerkToken = $this
-    ->createJWTToken(
-        relatedTo: 'user_id',
-        issuer: 'issuer',
-        claims: ['email' => 'user@mail.com'],
-    )
-    ->toString();
-```
+use RonasIT\Clerk\Traits\TokenMockTrait;
 
-3. attach generated token to the request’s `Authorization` header as a Bearer token.
+class UserRepositoryTest extends TestCase
+{
+    use TokenMockTrait;
+    
+    public function test()
+    {
+        $clerkToken = $this
+            ->createJWTToken(
+                relatedTo: 'user_id',
+                issuer: 'issuer',
+                claims: ['email' => 'user@mail.com'],
+            )
+            ->toString();
+    }
+}
+```
+You may also pass custom claims to the token using `claims` parameter.
+
+3. Use generated token within the `Authorization` header as a Bearer token:
+
+```php
+public function test()
+{
+    $response = $this->json(
+        method: 'put', 
+        uri: '/profile', 
+        data: $data, 
+        headers: ['Authorization' => "Bearer {$clerkToken}"],
+    );
+}
+```
