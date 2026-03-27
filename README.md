@@ -42,3 +42,38 @@ class AppServiceProvider extends ServiceProvider
     }
 }
 ```
+
+## Testing
+
+The package provides `TokenMockTrait` to help you write tests without a real Clerk instance. It generates RSA-signed JWTs that the `ClerkGuard` will accept.
+
+### Setup
+
+Add `TokenMockTrait` to your test class:
+
+> **Note:** `createJWTToken()` writes the generated RSA public key to `base_path(SIGNER_KEY_PATH)` (default: `tests/public_key.pem`) so the guard can verify tokens. Ensure this path is writable, or override the `SIGNER_KEY_PATH` constant in your test class to use a different location.
+
+### Generating tokens
+
+Call `createJWTToken()` to produce a signed JWT. The first argument is the subject (`sub` claim), which becomes the `external_id` on the resolved `User` object:
+
+```php
+$token = $this->createJWTToken('user_123')->toString();
+```
+
+Pass additional Clerk claims as the third argument:
+
+```php
+$token = $this->createJWTToken(
+    relatedTo: 'user_123',
+    claims: ['email' => 'user@example.com', 'role' => 'admin'],
+)->toString();
+```
+
+### Making authenticated requests
+
+Use the generated token as a Bearer token in your HTTP test requests:
+
+```php
+$response = $this->withToken($token)->getJson('/api/protected-endpoint');
+```
