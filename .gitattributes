@@ -4,4 +4,3 @@ README.md export-ignore
 pint.json export-ignore
 /tests export-ignore
 phpunit.xml export-ignore
-CLAUDE.md export-ignore
