@@ -46,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
 ## Testing
 
 To test authenticated user requests guarded by `ClerkGuard`, use the `TokenMockTrait`:
+
 1. Ensure clerk config is completely filled using `.env.testing` file or dynamically:
 
 ```php
