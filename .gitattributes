@@ -4,3 +4,5 @@ README.md export-ignore
 pint.json export-ignore
 /tests export-ignore
 phpunit.xml export-ignore
+/bootstrap export-ignore
+/.github export-ignore
