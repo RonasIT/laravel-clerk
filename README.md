@@ -31,14 +31,14 @@ To customize this behavior, you'll need to create your own `UserRepository` that
 Then, rebind it in one of the service providers:
 
 ```php
-use RonasIT\Clerk\Contracts\ClerkUserRepositoryContract;
+use RonasIT\Clerk\Contracts\UserRepositoryContract;
 use App\Support\Clerk\MyAwesomeUserRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        $this->app->bind(ClerkUserRepositoryContract::class, MyAwesomeUserRepository::class);
+        $this->app->bind(UserRepositoryContract::class, MyAwesomeUserRepository::class);
     }
 }
 ```
