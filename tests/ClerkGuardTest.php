@@ -66,6 +66,20 @@ class ClerkGuardTest extends TestCase
         );
     }
 
+    public function testAuthUserWithSignerKeyPath(): void
+    {
+        $clerkToken = $this
+            ->createJWTTokenWithSignerKeyPath('user_id')
+            ->toString();
+
+        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
+
+        $guard = app(ClerkGuard::class)->setRequest($request);
+
+        $this->assertTrue($guard->check());
+        $this->assertEquals('user_id', $guard->id());
+    }
+
     public function testAuthUserIssuerIsWrong(): void
     {
         $clerkToken = $this

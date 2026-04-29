@@ -12,13 +12,41 @@ use Lcobucci\JWT\Token;
 trait TokenMockTrait
 {
     protected const string SECRET_KEY_PASS = 'secret_key_pass';
+    protected const string SIGNER_KEY_PATH = 'storage/framework/testing/clerk_key.pem';
 
     protected function createJWTToken(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
     {
         list($signerCert, $privateCert) = $this->generateCertificates();
 
         Config::set('clerk.signer_key', $signerCert);
+        Config::set('clerk.signer_key_path', null);
 
+        return $this->buildToken($relatedTo, $issuer, $claims, $signerCert, $privateCert);
+    }
+
+    protected function createJWTTokenWithSignerKeyPath(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
+    {
+        list($signerCert, $privateCert) = $this->generateCertificates();
+
+        $absolutePath = base_path(self::SIGNER_KEY_PATH);
+        $directory = dirname($absolutePath);
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        file_put_contents($absolutePath, $signerCert);
+
+        $this->beforeApplicationDestroyed(fn () => @unlink($absolutePath));
+
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', self::SIGNER_KEY_PATH);
+
+        return $this->buildToken($relatedTo, $issuer, $claims, $signerCert, $privateCert);
+    }
+
+    private function buildToken(string $relatedTo, string $issuer, array $claims, string $signerCert, string $privateCert): Token
+    {
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),
             signingKey: InMemory::plainText($privateCert, self::SECRET_KEY_PASS),
