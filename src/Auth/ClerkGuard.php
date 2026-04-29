@@ -130,7 +130,9 @@ class ClerkGuard implements Guard
 
     protected function hasValidSignature(Token $decoded): bool
     {
-        $signerKey = InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
+        $signerKey = config('clerk.signer_key')
+            ? InMemory::plainText(config('clerk.signer_key'), config('clerk.secret_key'))
+            : InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
 
         return (new Validator())->validate(
             $decoded,
@@ -143,10 +145,11 @@ class ClerkGuard implements Guard
         $requiredConfigs = Arr::only($this->config, [
             'allowed_issuer',
             'secret_key',
-            'signer_key_path',
         ]);
 
-        if (array_filter($requiredConfigs) !== $requiredConfigs) {
+        $hasKey = !empty($this->config['signer_key']) || !empty($this->config['signer_key_path']);
+
+        if (array_filter($requiredConfigs) !== $requiredConfigs || !$hasKey) {
             throw new EmptyConfigException('One of required clerk config is empty.');
         }
     }
