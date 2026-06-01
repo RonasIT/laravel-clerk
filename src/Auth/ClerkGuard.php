@@ -130,7 +130,7 @@ class ClerkGuard implements Guard
 
     protected function hasValidSignature(Token $decoded): bool
     {
-        $signerKey = config('clerk.signer_key')
+        $signerKey = (config('clerk.signer_key'))
             ? InMemory::plainText(config('clerk.signer_key'), config('clerk.secret_key'))
             : InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
 
