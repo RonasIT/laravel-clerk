@@ -3,6 +3,7 @@
 namespace RonasIT\Clerk\Traits;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Config;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -10,19 +11,48 @@ use Lcobucci\JWT\Token;
 
 trait TokenMockTrait
 {
-    protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
-    protected const SECRET_KEY_PASS = 'secret_key_pass';
+    protected const string SECRET_KEY_PASS = 'secret_key_pass';
+    protected const string SIGNER_KEY_PATH = 'storage/framework/testing';
 
     protected function createJWTToken(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
     {
-        list($signerСert, $privateСert) = $this->generateCertificates();
+        list($signerCert, $privateCert) = $this->generateCertificates();
 
-        file_put_contents(base_path(self::SIGNER_KEY_PATH), $signerСert);
+        Config::set('clerk.signer_key', $signerCert);
+        Config::set('clerk.signer_key_path', null);
 
+        return $this->buildToken($relatedTo, $issuer, $claims, $signerCert, $privateCert);
+    }
+
+    protected function createJWTTokenWithSignerKeyPath(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
+    {
+        list($signerCert, $privateCert) = $this->generateCertificates();
+
+        $uniqueId = uniqid();
+        $relativePath = self::SIGNER_KEY_PATH . "/clerk_key_{$uniqueId}.pem";
+        $absolutePath = base_path($relativePath);
+        $directory = dirname($absolutePath);
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        file_put_contents($absolutePath, $signerCert);
+
+        $this->beforeApplicationDestroyed(fn () => @unlink($absolutePath));
+
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', $relativePath);
+
+        return $this->buildToken($relatedTo, $issuer, $claims, $signerCert, $privateCert);
+    }
+
+    private function buildToken(string $relatedTo, string $issuer, array $claims, string $signerCert, string $privateCert): Token
+    {
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),
-            signingKey: InMemory::plainText($privateСert, self::SECRET_KEY_PASS),
-            verificationKey: InMemory::plainText($signerСert),
+            signingKey: InMemory::plainText($privateCert, self::SECRET_KEY_PASS),
+            verificationKey: InMemory::plainText($signerCert),
         );
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();
