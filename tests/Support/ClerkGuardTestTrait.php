@@ -3,6 +3,8 @@
 namespace RonasIT\Clerk\Tests\Support;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 
 trait ClerkGuardTestTrait
 {
@@ -15,5 +17,19 @@ trait ClerkGuardTestTrait
         }
 
         return $request;
+    }
+
+    protected function persistSignerKeyToFile(): string
+    {
+        $relativePath = 'storage/framework/testing/clerk_key.pem';
+        $absolutePath = base_path($relativePath);
+
+        File::ensureDirectoryExists(dirname($absolutePath));
+
+        File::put($absolutePath, Config::get('clerk.signer_key'));
+
+        $this->beforeApplicationDestroyed(fn () => File::delete($absolutePath));
+
+        return $relativePath;
     }
 }

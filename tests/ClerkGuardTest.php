@@ -40,6 +40,26 @@ class ClerkGuardTest extends TestCase
         $this->assertEquals('user_id', $guard->id());
     }
 
+    public function testAuthUserWithSignerKeyPath(): void
+    {
+        $clerkToken = $this
+            ->createJWTToken('user_id')
+            ->toString();
+
+        $signerKeyPath = $this->persistSignerKeyToFile();
+
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', $signerKeyPath);
+
+        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
+
+        $guard = app(ClerkGuard::class)->setRequest($request);
+
+        $this->assertTrue($guard->check());
+        $this->assertTrue($guard->validate([$clerkToken]));
+        $this->assertEquals('user_id', $guard->id());
+    }
+
     public function testAuthUserWithCustomClaims(): void
     {
         $customClaims = $this->getJsonFixture('user_custom_claims');
@@ -64,26 +84,6 @@ class ClerkGuardTest extends TestCase
             expected: $customClaims,
             actual: array_intersect_key($claims, $customClaims),
         );
-    }
-
-    public function testAuthUserWithSignerKeyPath(): void
-    {
-        $clerkToken = $this
-            ->createJWTToken('user_id')
-            ->toString();
-
-        $signerKeyPath = 'storage/framework/testing/clerk_key.pem';
-        file_put_contents(base_path($signerKeyPath), Config::get('clerk.signer_key'));
-
-        Config::set('clerk.signer_key', null);
-        Config::set('clerk.signer_key_path', $signerKeyPath);
-
-        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
-
-        $guard = app(ClerkGuard::class)->setRequest($request);
-
-        $this->assertTrue($guard->check());
-        $this->assertEquals('user_id', $guard->id());
     }
 
     public function testAuthUserIssuerIsWrong(): void
