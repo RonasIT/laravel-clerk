@@ -47,13 +47,12 @@ class AppServiceProvider extends ServiceProvider
 
 To test authenticated user requests guarded by `ClerkGuard`, use the `TokenMockTrait`:
 
-1. Ensure clerk config is completely filled using `.env.testing` file or dynamically:
+1. Ensure clerk config is filled using `.env.testing` file or dynamically. The signer key is set automatically:
 
 ```php
 Config::set('clerk', [
     'allowed_issuer' => 'issuer',
     'secret_key' => 'my_secret_key',
-    'signer_key_path' => 'path/to/my/signer-key',
 ]);
 ```
 
