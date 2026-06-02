@@ -69,8 +69,14 @@ class ClerkGuardTest extends TestCase
     public function testAuthUserWithSignerKeyPath(): void
     {
         $clerkToken = $this
-            ->createJWTTokenWithSignerKeyPath('user_id')
+            ->createJWTToken('user_id')
             ->toString();
+
+        $signerKeyPath = 'storage/framework/testing/clerk_key.pem';
+        file_put_contents(base_path($signerKeyPath), Config::get('clerk.signer_key'));
+
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', $signerKeyPath);
 
         $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
 
