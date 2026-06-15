@@ -23,6 +23,18 @@ php artisan laravel-clerk:install
 
 3. Populate the necessary configuration options in `config/clerk.php`.
 
+## Configuration
+
+Set the following environment variables to configure the package:
+
+- `CLERK_ALLOWED_ISSUER` — the expected `iss` claim value of incoming JWT tokens.
+- `CLERK_ALLOWED_ORIGINS` — comma-separated list of allowed `azp` claim values.
+- `CLERK_SECRET_KEY` — your Clerk API secret key, used to verify the token signature.
+- `CLERK_SIGNER_KEY` — PEM content of the public JWT key as a string. Takes priority over `CLERK_SIGNER_KEY_PATH` when set.
+- `CLERK_SIGNER_KEY_PATH` — path to the public JWT key file, relative to `base_path()`. Defaults to `clerk.pem`. Used as a fallback when `CLERK_SIGNER_KEY` is not set.
+
+You can find the public JWT key in your Clerk dashboard under "Configure" → "API keys" → "JWKS Public Key".
+
 ## Usage
 
 By default, your app returns the `User` class with just the `external_id` property, which holds the user's ID in Clerk.
