@@ -21,7 +21,7 @@ class ClerkGuardTest extends TestCase
         Config::set('clerk', [
             'allowed_issuer' => 'issuer',
             'secret_key' => self::SECRET_KEY_PASS,
-            'signer_key_path' => self::SIGNER_KEY_PATH,
+            'signer_key' => 'signer_key_stub',
         ]);
     }
 
@@ -30,6 +30,26 @@ class ClerkGuardTest extends TestCase
         $clerkToken = $this
             ->createJWTToken('user_id')
             ->toString();
+
+        $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
+
+        $guard = app(ClerkGuard::class)->setRequest($request);
+
+        $this->assertTrue($guard->check());
+        $this->assertTrue($guard->validate([$clerkToken]));
+        $this->assertEquals('user_id', $guard->id());
+    }
+
+    public function testAuthUserWithSignerKeyPath(): void
+    {
+        $clerkToken = $this
+            ->createJWTToken('user_id')
+            ->toString();
+
+        $signerKeyPath = $this->persistSignerKeyToFile();
+
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', $signerKeyPath);
 
         $request = $this->generateRequest(['Authorization' => "Bearer {$clerkToken}"]);
 
@@ -100,6 +120,7 @@ class ClerkGuardTest extends TestCase
         Config::set('clerk', [
             'allowed_issuer' => null,
             'secret_key' => null,
+            'signer_key' => null,
             'signer_key_path' => null,
         ]);
 

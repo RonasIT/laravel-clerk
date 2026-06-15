@@ -3,6 +3,7 @@
 namespace RonasIT\Clerk\Traits;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Config;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -10,19 +11,18 @@ use Lcobucci\JWT\Token;
 
 trait TokenMockTrait
 {
-    protected const SIGNER_KEY_PATH = '/tests/public_key.pem';
-    protected const SECRET_KEY_PASS = 'secret_key_pass';
+    protected const string SECRET_KEY_PASS = 'secret_key_pass';
 
     protected function createJWTToken(string $relatedTo, string $issuer = 'issuer', array $claims = []): Token
     {
-        list($signerСert, $privateСert) = $this->generateCertificates();
+        list($signerCert, $privateCert) = $this->generateCertificates();
 
-        file_put_contents(base_path(self::SIGNER_KEY_PATH), $signerСert);
+        Config::set('clerk.signer_key', $signerCert);
 
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),
-            signingKey: InMemory::plainText($privateСert, self::SECRET_KEY_PASS),
-            verificationKey: InMemory::plainText($signerСert),
+            signingKey: InMemory::plainText($privateCert, self::SECRET_KEY_PASS),
+            verificationKey: InMemory::plainText($signerCert),
         );
 
         $now = CarbonImmutable::now()->toDateTimeImmutable();

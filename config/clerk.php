@@ -30,11 +30,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public key, string
+    |--------------------------------------------------------------------------
+    | Your public JWT key PEM content. You can find it in your Clerk dashboard under:
+    | "Configure" -> "API keys" -> "JWKS Public Key"
+    | Takes priority over signer_key_path if set.
+    */
+    'signer_key' => env('CLERK_SIGNER_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Public key path, filepath starting from base_path
     |--------------------------------------------------------------------------
-    | Path to your public JWT key file. You can find the file content in your
-    | Clerk dashboard under:
-    | "Configure" -> "API keys" -> "JWKS Public Key""
+    | Path to your public JWT key file. Used as a fallback when signer_key is not set.
     */
     'signer_key_path' => env('CLERK_SIGNER_KEY_PATH', 'clerk.pem'),
 ];
