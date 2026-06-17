@@ -32,7 +32,7 @@ return [
     |--------------------------------------------------------------------------
     | Public key, string
     |--------------------------------------------------------------------------
-    | Your public JWT key PEM content. You can find it in your Clerk dashboard under:
+    | Your public JWT key PEM content, base64-encoded. You can find it in your Clerk dashboard under:
     | "Configure" -> "API keys" -> "JWKS Public Key"
     | Takes priority over signer_key_path if set.
     */
