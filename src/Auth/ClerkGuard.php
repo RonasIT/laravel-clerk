@@ -18,6 +18,7 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Validator;
 use RonasIT\Clerk\Contracts\UserRepositoryContract;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
+use RonasIT\Clerk\Exceptions\InvalidConfigException;
 
 class ClerkGuard implements Guard
 {
@@ -151,6 +152,21 @@ class ClerkGuard implements Guard
 
         if (array_filter($requiredConfigs) !== $requiredConfigs || !$hasKey) {
             throw new EmptyConfigException('One of required clerk config is empty.');
+        }
+
+        $this->validateSignerKey();
+    }
+
+    protected function validateSignerKey(): void
+    {
+        if (empty($this->config['signer_key'])) {
+            return;
+        }
+
+        $decoded = base64_decode(trim($this->config['signer_key']), true);
+
+        if ($decoded === false || openssl_pkey_get_public($decoded) === false) {
+            throw new InvalidConfigException('The "clerk.signer_key" config must contain a base64-encoded PEM public key.');
         }
     }
 }
