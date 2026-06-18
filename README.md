@@ -38,7 +38,7 @@ You can find the public JWT key in your Clerk dashboard under "Configure" → "A
 Since a PEM block is multi-line, encode it with base64 before placing it into `CLERK_SIGNER_KEY`:
 
 ```sh
-base64 -w 0 clerk.pem
+base64 < clerk.pem | tr -d '\n'
 ```
 
 ## Usage
