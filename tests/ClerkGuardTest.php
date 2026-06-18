@@ -100,6 +100,18 @@ class ClerkGuardTest extends TestCase
         app(ClerkGuard::class);
     }
 
+    public function testMalformedSignerKeyPathConfigException(): void
+    {
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', 'storage/framework/testing/missing_clerk_key.pem');
+
+        $this->expectException(InvalidConfigException::class);
+
+        $this->expectExceptionMessage('The "clerk.signer_key_path" config must point to a readable PEM public key file.');
+
+        app(ClerkGuard::class);
+    }
+
     public function testAuthUserIssuerIsWrong(): void
     {
         $clerkToken = $this

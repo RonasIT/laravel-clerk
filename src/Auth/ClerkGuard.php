@@ -159,14 +159,20 @@ class ClerkGuard implements Guard
 
     protected function validateSignerKey(): void
     {
-        if (empty($this->config['signer_key'])) {
+        if (!empty($this->config['signer_key'])) {
+            $decoded = base64_decode(trim($this->config['signer_key']), true);
+
+            if ($decoded === false || openssl_pkey_get_public($decoded) === false) {
+                throw new InvalidConfigException('The "clerk.signer_key" config must contain a base64-encoded PEM public key.');
+            }
+
             return;
         }
 
-        $decoded = base64_decode(trim($this->config['signer_key']), true);
+        $path = base_path($this->config['signer_key_path']);
 
-        if ($decoded === false || openssl_pkey_get_public($decoded) === false) {
-            throw new InvalidConfigException('The "clerk.signer_key" config must contain a base64-encoded PEM public key.');
+        if (!is_readable($path) || openssl_pkey_get_public(file_get_contents($path)) === false) {
+            throw new InvalidConfigException('The "clerk.signer_key_path" config must point to a readable PEM public key file.');
         }
     }
 }
