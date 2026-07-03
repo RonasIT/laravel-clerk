@@ -26,7 +26,7 @@ trait ClerkGuardTestTrait
 
         File::ensureDirectoryExists(dirname($absolutePath));
 
-        File::put($absolutePath, base64_decode(Config::get('clerk.signer_key')));
+        File::put($absolutePath, base64_decode(Config::get('clerk.signer_key'), true));
 
         $this->beforeApplicationDestroyed(fn () => File::delete($absolutePath));
 

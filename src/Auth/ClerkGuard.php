@@ -124,16 +124,16 @@ class ClerkGuard implements Guard
 
         return !$decoded->isExpired($now)
             && $decoded->hasBeenIssuedBefore($now)
-            && $decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))
-            && (empty($origin) || in_array($origin, config('clerk.allowed_origins')))
+            && $decoded->hasBeenIssuedBy($this->config['allowed_issuer'])
+            && (empty($origin) || in_array($origin, $this->config['allowed_origins']))
             && $this->hasValidSignature($decoded);
     }
 
     protected function hasValidSignature(Token $decoded): bool
     {
-        $signerKey = (config('clerk.signer_key'))
-            ? InMemory::plainText(base64_decode(config('clerk.signer_key')), config('clerk.secret_key'))
-            : InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
+        $signerKey = (!empty($this->config['signer_key']))
+            ? InMemory::plainText($this->getDecodedSignerKey(), $this->config['secret_key'])
+            : InMemory::file(base_path($this->config['signer_key_path']), $this->config['secret_key']);
 
         return (new Validator())->validate(
             $decoded,
@@ -160,7 +160,7 @@ class ClerkGuard implements Guard
     protected function validateSignerKey(): void
     {
         if (!empty($this->config['signer_key'])) {
-            $decoded = base64_decode(trim($this->config['signer_key']), true);
+            $decoded = $this->getDecodedSignerKey();
 
             if ($decoded === false || openssl_pkey_get_public($decoded) === false) {
                 throw new InvalidConfigException('The "clerk.signer_key" config must contain a base64-encoded PEM public key.');
@@ -174,5 +174,10 @@ class ClerkGuard implements Guard
         if (!is_readable($path) || openssl_pkey_get_public(file_get_contents($path)) === false) {
             throw new InvalidConfigException('The "clerk.signer_key_path" config must point to a readable PEM public key file.');
         }
+    }
+
+    protected function getDecodedSignerKey(): string|false
+    {
+        return base64_decode(trim($this->config['signer_key']), true);
     }
 }
