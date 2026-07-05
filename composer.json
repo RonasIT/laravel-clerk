@@ -14,7 +14,8 @@
     "php": "^8.3",
     "laravel/framework": ">=11",
     "lcobucci/jwt": "^5.5",
-    "winter/laravel-config-writer": "^1.2"
+    "winter/laravel-config-writer": "^1.2",
+    "ext-openssl": "*"
   },
   "extra": {
     "laravel": {
@@ -26,7 +27,6 @@
   "require-dev": {
     "phpunit/phpunit": ">=11",
     "orchestra/testbench": ">=9",
-    "ext-openssl": "*",
     "ronasit/laravel-helpers": "^3.5",
     "laravel/pint": "^1.27"
   }
