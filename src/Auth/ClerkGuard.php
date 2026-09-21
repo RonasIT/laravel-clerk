@@ -171,7 +171,7 @@ class ClerkGuard implements Guard
 
         $path = base_path($this->config['signer_key_path']);
 
-        if (!is_readable($path) || openssl_pkey_get_public(file_get_contents($path)) === false) {
+        if (!is_readable($path) || openssl_pkey_get_public("file://{$path}") === false) {
             throw new InvalidConfigException('The "clerk.signer_key_path" config must point to a readable PEM public key file.');
         }
     }
