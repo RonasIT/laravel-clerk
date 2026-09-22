@@ -100,6 +100,17 @@ class ClerkGuardTest extends TestCase
         app(ClerkGuard::class);
     }
 
+    public function testRawPemSignerKeyConfigException(): void
+    {
+        list($signerCert) = $this->generateCertificates();
+
+        Config::set('clerk.signer_key', $signerCert);
+
+        $this->expectException(InvalidConfigException::class);
+
+        app(ClerkGuard::class);
+    }
+
     public function testMalformedSignerKeyPathConfigException(): void
     {
         Config::set('clerk.signer_key', null);
