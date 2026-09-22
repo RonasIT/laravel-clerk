@@ -17,7 +17,7 @@ trait TokenMockTrait
     {
         list($signerCert, $privateCert) = $this->generateCertificates();
 
-        Config::set('clerk.signer_key', $signerCert);
+        Config::set('clerk.signer_key', base64_encode($signerCert));
 
         $configJwt = Configuration::forAsymmetricSigner(
             signer: new Sha256(),

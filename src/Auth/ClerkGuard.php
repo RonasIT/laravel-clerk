@@ -18,12 +18,14 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Validator;
 use RonasIT\Clerk\Contracts\UserRepositoryContract;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
+use RonasIT\Clerk\Exceptions\InvalidConfigException;
 
 class ClerkGuard implements Guard
 {
     protected ?Authenticatable $user = null;
     protected Request $request;
     protected array $config;
+    protected string|false $decodedSignerKey;
 
     public function __construct()
     {
@@ -123,16 +125,16 @@ class ClerkGuard implements Guard
 
         return !$decoded->isExpired($now)
             && $decoded->hasBeenIssuedBefore($now)
-            && $decoded->hasBeenIssuedBy(config('clerk.allowed_issuer'))
-            && (empty($origin) || in_array($origin, config('clerk.allowed_origins')))
+            && $decoded->hasBeenIssuedBy($this->config['allowed_issuer'])
+            && (empty($origin) || in_array($origin, $this->config['allowed_origins']))
             && $this->hasValidSignature($decoded);
     }
 
     protected function hasValidSignature(Token $decoded): bool
     {
-        $signerKey = (config('clerk.signer_key'))
-            ? InMemory::plainText(config('clerk.signer_key'), config('clerk.secret_key'))
-            : InMemory::file(base_path(config('clerk.signer_key_path')), config('clerk.secret_key'));
+        $signerKey = (!empty($this->config['signer_key']))
+            ? InMemory::plainText($this->getDecodedSignerKey(), $this->config['secret_key'])
+            : InMemory::file(base_path($this->config['signer_key_path']), $this->config['secret_key']);
 
         return (new Validator())->validate(
             $decoded,
@@ -152,5 +154,31 @@ class ClerkGuard implements Guard
         if (array_filter($requiredConfigs) !== $requiredConfigs || !$hasKey) {
             throw new EmptyConfigException('One of required clerk config is empty.');
         }
+
+        $this->validateSignerKey();
+    }
+
+    protected function validateSignerKey(): void
+    {
+        if (!empty($this->config['signer_key'])) {
+            $decoded = $this->getDecodedSignerKey();
+
+            if ($decoded === false || openssl_pkey_get_public($decoded) === false) {
+                throw new InvalidConfigException('The "clerk.signer_key" config must contain a base64-encoded PEM public key.');
+            }
+
+            return;
+        }
+
+        $path = base_path($this->config['signer_key_path']);
+
+        if (!is_readable($path) || openssl_pkey_get_public("file://{$path}") === false) {
+            throw new InvalidConfigException('The "clerk.signer_key_path" config must point to a readable PEM public key file.');
+        }
+    }
+
+    protected function getDecodedSignerKey(): string|false
+    {
+        return $this->decodedSignerKey ??= base64_decode(trim($this->config['signer_key']), true);
     }
 }

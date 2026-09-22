@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use RonasIT\Clerk\Auth\ClerkGuard;
 use RonasIT\Clerk\Exceptions\EmptyConfigException;
+use RonasIT\Clerk\Exceptions\InvalidConfigException;
 use RonasIT\Clerk\Tests\Support\ClerkGuardTestTrait;
 use RonasIT\Clerk\Traits\TokenMockTrait;
 
@@ -18,10 +19,12 @@ class ClerkGuardTest extends TestCase
     {
         parent::setUp();
 
+        list($signerCert) = $this->generateCertificates();
+
         Config::set('clerk', [
             'allowed_issuer' => 'issuer',
             'secret_key' => self::SECRET_KEY_PASS,
-            'signer_key' => 'signer_key_stub',
+            'signer_key' => base64_encode($signerCert),
         ]);
     }
 
@@ -84,6 +87,40 @@ class ClerkGuardTest extends TestCase
             expected: $customClaims,
             actual: array_intersect_key($claims, $customClaims),
         );
+    }
+
+    public function testMalformedSignerKeyConfigException(): void
+    {
+        Config::set('clerk.signer_key', 'not a valid base64 key');
+
+        $this->expectException(InvalidConfigException::class);
+
+        $this->expectExceptionMessage('The "clerk.signer_key" config must contain a base64-encoded PEM public key.');
+
+        app(ClerkGuard::class);
+    }
+
+    public function testRawPemSignerKeyConfigException(): void
+    {
+        list($signerCert) = $this->generateCertificates();
+
+        Config::set('clerk.signer_key', $signerCert);
+
+        $this->expectException(InvalidConfigException::class);
+
+        app(ClerkGuard::class);
+    }
+
+    public function testMalformedSignerKeyPathConfigException(): void
+    {
+        Config::set('clerk.signer_key', null);
+        Config::set('clerk.signer_key_path', 'storage/framework/testing/missing_clerk_key.pem');
+
+        $this->expectException(InvalidConfigException::class);
+
+        $this->expectExceptionMessage('The "clerk.signer_key_path" config must point to a readable PEM public key file.');
+
+        app(ClerkGuard::class);
     }
 
     public function testAuthUserIssuerIsWrong(): void
