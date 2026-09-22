@@ -25,6 +25,7 @@ class ClerkGuard implements Guard
     protected ?Authenticatable $user = null;
     protected Request $request;
     protected array $config;
+    protected string|false $decodedSignerKey;
 
     public function __construct()
     {
@@ -178,6 +179,6 @@ class ClerkGuard implements Guard
 
     protected function getDecodedSignerKey(): string|false
     {
-        return base64_decode(trim($this->config['signer_key']), true);
+        return $this->decodedSignerKey ??= base64_decode(trim($this->config['signer_key']), true);
     }
 }
