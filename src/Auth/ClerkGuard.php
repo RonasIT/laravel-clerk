@@ -97,7 +97,7 @@ class ClerkGuard implements Guard
 
     public function id(): ?string
     {
-        return $this->user()->getAuthIdentifier();
+        return $this->user()?->getAuthIdentifier();
     }
 
     public function validate(array $credentials = []): bool

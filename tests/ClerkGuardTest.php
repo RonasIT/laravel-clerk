@@ -134,6 +134,8 @@ class ClerkGuardTest extends TestCase
         $guard = app(ClerkGuard::class)->setRequest($request);
 
         $this->assertFalse($guard->check());
+
+        $this->assertNull($guard->id());
     }
 
     public function testAuthUserInvalidToken(): void
@@ -143,6 +145,8 @@ class ClerkGuardTest extends TestCase
         $guard = app(ClerkGuard::class)->setRequest($request);
 
         $this->assertFalse($guard->check());
+
+        $this->assertNull($guard->id());
     }
 
     public function testGuest(): void
@@ -150,6 +154,8 @@ class ClerkGuardTest extends TestCase
         $guard = app(ClerkGuard::class)->setRequest(new Request());
 
         $this->assertTrue($guard->guest());
+
+        $this->assertNull($guard->id());
     }
 
     public function testEmptyConfigException(): void
