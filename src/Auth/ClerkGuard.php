@@ -121,13 +121,28 @@ class ClerkGuard implements Guard
     {
         $now = Carbon::now();
 
-        $origin = $decoded->claims()->get('azp');
-
         return !$decoded->isExpired($now)
             && $decoded->hasBeenIssuedBefore($now)
             && $decoded->hasBeenIssuedBy($this->config['allowed_issuer'])
-            && (empty($origin) || in_array($origin, $this->config['allowed_origins']))
+            && $this->isAllowedOrigin($decoded->claims()->get('azp'))
             && $this->hasValidSignature($decoded);
+    }
+
+    protected function isAllowedOrigin(mixed $origin): bool
+    {
+        if (empty($origin) || in_array($origin, $this->config['allowed_origins'])) {
+            return true;
+        }
+
+        if (!is_string($origin) || empty($this->config['allow_localhost']) || app()->isProduction()) {
+            return false;
+        }
+
+        $url = parse_url($origin);
+
+        return in_array($url['host'] ?? null, ['localhost', '127.0.0.1'], true)
+            && isset($url['port'])
+            && $origin === "http://{$url['host']}:{$url['port']}";
     }
 
     protected function hasValidSignature(Token $decoded): bool

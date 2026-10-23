@@ -20,6 +20,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Local origins, OPTIONAL boolean
+    |--------------------------------------------------------------------------
+    | When enabled, a token whose origin is http://localhost:<port> or
+    | http://127.0.0.1:<port> is accepted on top of allowed_origins, so local
+    | frontends on any port can call the API. Ignored in production.
+    */
+    'allow_localhost' => (bool) env('CLERK_ALLOW_LOCALHOST', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Secret key, string
     |--------------------------------------------------------------------------
     | Your API secret key, needed to verify the token signature, can be found
