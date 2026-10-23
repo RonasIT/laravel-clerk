@@ -29,6 +29,7 @@ Set the following environment variables to configure the package:
 
 - `CLERK_ALLOWED_ISSUER` — the expected `iss` claim value of incoming JWT tokens.
 - `CLERK_ALLOWED_ORIGINS` — comma-separated list of allowed `azp` claim values.
+- `CLERK_ALLOW_LOCALHOST` — `true` to also accept tokens whose `azp` is `http://localhost:<port>` or `http://127.0.0.1:<port>`, on any port, on top of `CLERK_ALLOWED_ORIGINS`. Defaults to `false`. Ignored in the `production` environment. Meant for development servers that local frontends call.
 - `CLERK_SECRET_KEY` — your Clerk API secret key, used to verify the token signature.
 - `CLERK_SIGNER_KEY` — base64-encoded PEM content of the public JWT key. Takes priority over `CLERK_SIGNER_KEY_PATH` when set.
 - `CLERK_SIGNER_KEY_PATH` — path to the public JWT key file, relative to `base_path()`. Defaults to `clerk.pem`. Used as a fallback when `CLERK_SIGNER_KEY` is not set.
